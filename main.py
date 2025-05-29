@@ -82,7 +82,9 @@ def venda_passagem():
     
     cadastrar_passageiro(cpf)
     voo.append([passageiros[cpf][0], passageiros[cpf][1]])
-    voos[voo_selecionado][4] -= 1 
+
+    qtd_passageiros = voos[voo_selecionado]
+    qtd_passageiros -= 1
 
     
 def mostrar_opcoes():
@@ -102,7 +104,7 @@ def mostrar_opcoes():
     return opcoes
     
 
-def menu():
+def main():
     opcoes = mostrar_opcoes()
     escolha = input('Digite o numero da operação que deseja realizar: ')
     
@@ -117,6 +119,4 @@ def menu():
         escolha = input('Digite o numero da operação que deseja realizar: ')
 
 
-menu()
-print(voos_passageiros, 'DEBUGGGGGGGGGGG')
-print('-'*40)
+main()
