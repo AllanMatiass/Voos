@@ -40,7 +40,7 @@ def consultar_voo():
     print(f'Origem: {voo[0]}\nDestino: {voo[1]}\nNumero de escalas: {voo[2]}\nPreço da passagem: {voo[3]}\nQuantidade de lugares disponíveis: {voo[4]}')
 
 def listar_voos():
-    if len(voos) > 0:
+    if len(voos) < 0:
         return
     for i in voos:
         cidade_embarque = voos[i][0]
@@ -66,7 +66,12 @@ def venda_passagem():
         print('Digite um ID valido')
         return
     
+
     voo = voos_passageiros[voo_selecionado]
+    if voos[voo_selecionado][4] <= 0:
+        print('Voo sem vagas para passageiros')
+        return
+    
     cpf = input('Digite seu CPF: ')
 
     if cpf in passageiros:
@@ -83,8 +88,21 @@ def venda_passagem():
     cadastrar_passageiro(cpf)
     voo.append([passageiros[cpf][0], passageiros[cpf][1]])
 
-    qtd_passageiros = voos[voo_selecionado]
+    qtd_passageiros = voos[voo_selecionado][4]
     qtd_passageiros -= 1
+
+def listar_passageiros_voo():
+    listar_voos()
+
+    escolha = input('Digite o ID do voo: ')
+
+    if escolha not in voos:
+        print('Digite um ID válido.')
+        return
+    
+    voo = voos[escolha]
+
+    # falta terminar
 
     
 def mostrar_opcoes():
@@ -95,7 +113,7 @@ def mostrar_opcoes():
         '4': ['cancelar_passagem', 'Cancelar passagem'],
         '5': [listar_voos, 'Listar voos'],
         '6': ['informar_voo_menor_escala', 'Informar o voo com menor escala'],
-        '7': ['listar_passageiros_voo', 'Listar passageiros de um voo'],
+        '7': [listar_passageiros_voo, 'Listar passageiros de um voo'],
         '8': [None, 'Sair']
     }
     for i in opcoes:
