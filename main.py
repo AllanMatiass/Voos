@@ -41,6 +41,7 @@ def consultar_voo():
 
 def listar_voos():
     if len(voos) < 0:
+        print('Não há voos')
         return
     for i in voos:
         cidade_embarque = voos[i][0]
@@ -52,10 +53,11 @@ def listar_voos():
         print(f'VOO #{i}\nCidade de embarque: {cidade_embarque}\nDestino: {destino}\nEscalas: {escalas}\nPreço: R${preco}\nLugares disponíveis: {lugares_disponiveis}')
         print('-'*30)
 
-def cadastrar_passageiro(cpf):
+def cadastrar_passageiro(cpf, numero):
     nome = input('Digite seu nome: ')
     telefone = input('Digite seu telefone: ')
     passageiros[cpf] = [nome, telefone]
+    voos_passageiros[numero].append(cpf)
     
 
 def venda_passagem():
@@ -77,7 +79,7 @@ def venda_passagem():
     if cpf in passageiros:
         if cpf not in voo:
             print('já existe em passageiros, usando informações existentes...')
-            voo.append([passageiros[cpf][0], passageiros[cpf][1]])
+            voo.append(cpf)
             voos[voo_selecionado][4] -= 1 # Quantidade de lugares
             print('Usuário cadastrado com sucesso')
             return
@@ -85,11 +87,9 @@ def venda_passagem():
         print('Usuario já cadastrado no voo.')
         return
     
-    cadastrar_passageiro(cpf)
-    voo.append([passageiros[cpf][0], passageiros[cpf][1]])
+    cadastrar_passageiro(cpf, voo_selecionado)
 
-    qtd_passageiros = voos[voo_selecionado][4]
-    qtd_passageiros -= 1
+    voos[voo_selecionado][4] -= 1
 
 def listar_passageiros_voo():
     listar_voos()
@@ -100,9 +100,16 @@ def listar_passageiros_voo():
         print('Digite um ID válido.')
         return
     
-    voo = voos[escolha]
+    passageiros_voo = voos_passageiros[escolha]
+    print('-'*40)
+    for i in passageiros_voo:
+        nome = passageiros[i][0]
+        tel = passageiros[i][1]
+        print(f'Nome: {nome}\nTelefone: {tel}\n')
+    
+    print('-'*40)
 
-    # falta terminar
+
 
     
 def mostrar_opcoes():
