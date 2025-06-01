@@ -1,140 +1,216 @@
-# Estrutura de dados 
-voos = {}  # chave: número do voo, valor: lista com informações do voo
-passageiros = {}  # chave: CPF do passageiro, valor: lista com nome e telefone
-voos_passageiros = {}  # chave: número do voo, valor: lista de CPFs
+voos = {}
+passageiros = {}
+voos_passageiros = {}
 
-# Função para cadastrar um novo voo
+
 def cadastrar_voo():
-    
-    numero = input("Digite o número do voo: ")
+    numero = input('Digite o número do voo: ')
     if numero in voos:
-        print("Voo já cadastrado.")
+        print('Voo já cadastrado.')
         return
-    
-    origem = input("Digite a cidade de origem: ")
-    destino = input("Digite a cidade de destino: ")
-    escalas = int(input("Digite o número de escalas: "))
-    preco = float(input("Digite o preço da passagem: "))
-    lugares = int(input("Digite a quantidade de lugares disponíveis: "))
 
-    voos[numero] = [origem, destino, escalas, preco, lugares]
+    origem = input('Digite a cidade de origem: ')
+    destino = input('Digite a cidade de destino: ')
 
+    escalas = int(input('Digite o número de escalas: '))
+    erro = False
+    if escalas < 0:
+        print('Escala deve ser maior ou igual a zero.')
+        erro = True
 
-    # No ato de vender a passagem, a gente pega essa lista e adiciona os dados do passageiro na lista referenciada.
-    voos_passageiros[numero] = []
-    print("Voo cadastrado com sucesso.")
+    preco = float(input('Digite o preço da passagem: '))
+
+    if preco < 0:
+        erro = True
+        print('Preço deve ser maior ou igual a zero.')
+
+    lugares = int(input('Digite a quantidade de lugares disponíveis: '))
+
+    if lugares < 0:
+        erro = True
+        print('A quantidade de lugares deve ser maior ou igual a zero.')
+
+    if not erro:
+        voos[numero] = [origem, destino, escalas, preco, lugares]
+        voos_passageiros[numero] = []
+        print('Voo cadastrado com sucesso.')
+        return
+
+    print('Falha no cadastro do voo.')
+
 
 def consultar_voo():
-    codigo = input('Digite o código do voo: ')
+    print('1 - Consultar por código do voo')
+    print('2 - Consultar por cidade de origem')
+    print('3 - Consultar por cidade de destino')
 
-    while codigo not in voos:
-        print('digite um codigo existente ou digite "quit" para cancelar a operação')
+    opcao = input('Escolha uma opção: ')
+
+    if opcao == '1':
         codigo = input('Digite o código do voo: ')
+        if codigo in voos:
+            v = voos[codigo]
+            print(
+                f'Voo #{codigo}\nOrigem: {v[0]}\nDestino: {v[1]}\nEscalas: {v[2]}\nPreço: R${v[3]}\nLugares: {v[4]}')
 
-        if codigo.strip().lower() == 'quit':
-            return
-        
-    
-    voo = voos[codigo]
-    
-    print(f'Origem: {voo[0]}\nDestino: {voo[1]}\nNumero de escalas: {voo[2]}\nPreço da passagem: {voo[3]}\nQuantidade de lugares disponíveis: {voo[4]}')
+        else:
+            print('Voo não encontrado.')
+
+    elif opcao == '2':
+        origem = input('Digite a cidade de origem: ')
+        for codigo, v in voos.items():
+            if v[0].lower() == origem.lower():
+                print(f'Voo #{codigo} -> Destino: {v[1]} | Preço: R${v[3]}')
+
+    elif opcao == '3':
+        destino = input('Digite a cidade de destino: ')
+        for codigo, v in voos.items():
+            if v[1].lower() == destino.lower():
+                print(f'Voo #{codigo} -> Origem: {v[0]} | Preço: R${v[3]}')
+
+    else:
+        print('Opção inválida.')
+
 
 def listar_voos():
-    if len(voos) < 0:
-        print('Não há voos')
+    if len(voos) == 0:
+        print('Não há voos cadastrados.')
         return
-    for i in voos:
-        cidade_embarque = voos[i][0]
-        destino = voos[i][1]
-        escalas = voos[i][2]
-        preco = voos[i][3]
-        lugares_disponiveis = voos[i][4]
+
+    for codigo, v in voos.items():
         print('-'*30)
-        print(f'VOO #{i}\nCidade de embarque: {cidade_embarque}\nDestino: {destino}\nEscalas: {escalas}\nPreço: R${preco}\nLugares disponíveis: {lugares_disponiveis}')
+        print(
+            f'Voo #{codigo}\nOrigem: {v[0]}\nDestino: {v[1]}\nEscalas: {v[2]}\nPreço: R${v[3]}\nLugares disponíveis: {v[4]}')
         print('-'*30)
 
+
 def cadastrar_passageiro(cpf, numero):
-    nome = input('Digite seu nome: ')
-    telefone = input('Digite seu telefone: ')
+    nome = input('Digite o nome: ')
+    telefone = input('Digite o telefone: ')
+    if cpf in passageiros and passageiros[cpf][0] != nome:
+        print('CPF já cadastrado com nome diferente.')
+        return False
+
     passageiros[cpf] = [nome, telefone]
     voos_passageiros[numero].append(cpf)
-    
+    voos[numero][4] -= 1
+    print('Passagem vendida com sucesso.')
+    return True
+
 
 def venda_passagem():
     listar_voos()
-    voo_selecionado = input('Digite o ID do voo que deseja: ')
-
-    if voo_selecionado not in voos:
-        print('Digite um ID valido')
+    voo = input('Digite o código do voo: ')
+    if voo not in voos:
+        print('Voo não encontrado.')
         return
-    
 
-    voo = voos_passageiros[voo_selecionado]
-    if voos[voo_selecionado][4] <= 0:
-        print('Voo sem vagas para passageiros')
+    if voos[voo][4] <= 0:
+        print('Voo lotado.')
         return
-    
-    cpf = input('Digite seu CPF: ')
+
+    cpf = input('Digite o CPF: ')
+    if cpf in voos_passageiros[voo]:
+        print('Passageiro já está nesse voo.')
+        return
 
     if cpf in passageiros:
-        if cpf not in voo:
-            print('já existe em passageiros, usando informações existentes...')
-            voo.append(cpf)
-            voos[voo_selecionado][4] -= 1 # Quantidade de lugares
-            print('Usuário cadastrado com sucesso')
-            return
-        
-        print('Usuario já cadastrado no voo.')
-        return
-    
-    cadastrar_passageiro(cpf, voo_selecionado)
+        print('Passageiro já cadastrado. Usando informações existentes.')
+        voos_passageiros[voo].append(cpf)
+        voos[voo][4] -= 1
+        print('Passagem vendida com sucesso.')
 
-    voos[voo_selecionado][4] -= 1
+    else:
+        cadastrar = cadastrar_passageiro(cpf, voo)
+        if not cadastrar:
+            print('Falha na venda...')
+
 
 def listar_passageiros_voo():
     listar_voos()
-
-    escolha = input('Digite o ID do voo: ')
-
-    if escolha not in voos:
-        print('Digite um ID válido.')
+    codigo = input('Digite o código do voo: ')
+    if codigo not in voos:
+        print('Voo inválido.')
         return
-    
-    passageiros_voo = voos_passageiros[escolha]
-    print('-'*40)
-    for i in passageiros_voo:
-        nome = passageiros[i][0]
-        tel = passageiros[i][1]
-        print(f'Nome: {nome}\nTelefone: {tel}\n')
-    
+
     print('-'*40)
 
+    for cpf in voos_passageiros[codigo]:
+        dados = passageiros[cpf]
+        print(f'Nome: {dados[0]}\nTelefone: {dados[1]}\nCPF: {cpf}\n')
+
+    print(f'Lugares disponíveis: {voos[codigo][4]}')
+    print('-'*40)
 
 
-    
+def cancelar_passagem():
+    cpf = input('Digite o CPF do passageiro: ')
+    if cpf not in passageiros:
+        print('Passageiro não encontrado.')
+        return
+
+    encontrou = False
+    for codigo, lista in voos_passageiros.items():
+        if cpf in lista:
+            v = voos[codigo]
+            print('-'*30)
+            print(f'Voo #{codigo}\nOrigem: {v[0]}\nDestino: {v[1]}')
+            encontrou = True
+            print('-'*30)
+
+    if not encontrou:
+        print('Este passageiro não possui voos.')
+        return
+
+    escolha = input('Digite o código do voo que deseja cancelar: ')
+    if escolha in voos and cpf in voos_passageiros[escolha]:
+        voos_passageiros[escolha].remove(cpf)
+        voos[escolha][4] += 1
+        print('Passagem cancelada com sucesso.')
+    else:
+        print('Informações inválidas.')
+
+
+def voo_menor_escala():
+    origem = input('Digite a cidade de origem: ')
+    destino = input('Digite a cidade de destino: ')
+    menor = None
+    codigo = None
+    for c, v in voos.items():
+        if v[0].lower() == origem.lower() and v[1].lower() == destino.lower():
+            if menor is None or v[2] < menor:
+                menor = v[2]
+                codigo = c
+    if codigo:
+        print(f'Voo com menor escala: #{codigo} com {menor} escalas.')
+
+    else:
+        print('Nenhum voo encontrado com essas cidades.')
+
+
 def mostrar_opcoes():
     opcoes = {
         '1': [cadastrar_voo, 'Cadastrar voo'],
         '2': [consultar_voo, 'Consultar voo'],
         '3': [venda_passagem, 'Vender passagem'],
-        '4': ['cancelar_passagem', 'Cancelar passagem'],
+        '4': [cancelar_passagem, 'Cancelar passagem'],
         '5': [listar_voos, 'Listar voos'],
-        '6': ['informar_voo_menor_escala', 'Informar o voo com menor escala'],
+        '6': [voo_menor_escala, 'Informar o voo com menor escala'],
         '7': [listar_passageiros_voo, 'Listar passageiros de um voo'],
         '8': [None, 'Sair']
     }
     for i in opcoes:
         print(f'{i} - {opcoes[i][1]}')
-    
+
     return opcoes
-    
+
 
 def main():
     opcoes = mostrar_opcoes()
     escolha = input('Digite o numero da operação que deseja realizar: ')
-    
+
     while escolha != '8':
-        
+
         if escolha not in opcoes:
             print('Escolha inválida')
         else:
