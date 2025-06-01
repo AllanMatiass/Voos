@@ -52,9 +52,9 @@ def consultar_voo():
             v = voos[codigo]
             print(
                 f'Voo #{codigo}\nOrigem: {v[0]}\nDestino: {v[1]}\nEscalas: {v[2]}\nPreço: R${v[3]}\nLugares: {v[4]}')
-
-        else:
-            print('Voo não encontrado.')
+            return
+        
+        print('Voo não encontrado.')
 
     elif opcao == '2':
         origem = input('Digite a cidade de origem: ')
@@ -189,9 +189,8 @@ def voo_menor_escala():
                 codigo = c
     if codigo:
         print(f'Voo com menor escala: #{codigo} com {menor} escalas.')
-
-    else:
-        print('Nenhum voo encontrado com essas cidades.')
+        return
+    print('Nenhum voo encontrado com essas cidades.')
 
 
 def mostrar_opcoes():
