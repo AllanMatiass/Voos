@@ -11,9 +11,9 @@ def cadastrar_voo():
 
     origem = input('Digite a cidade de origem: ')
     destino = input('Digite a cidade de destino: ')
-
     escalas = int(input('Digite o número de escalas: '))
     erro = False
+
     if escalas < 0:
         print('Escala deve ser maior ou igual a zero.')
         erro = True
@@ -119,18 +119,23 @@ def venda_passagem():
         voos_passageiros[voo].append(cpf)
         voos[voo][4] -= 1
         print('Passagem vendida com sucesso.')
+        return
 
-    else:
-        cadastrar = cadastrar_passageiro(cpf, voo)
-        if not cadastrar:
-            print('Falha na venda...')
+    cadastrar = cadastrar_passageiro(cpf, voo)
+    if not cadastrar:
+        print('Falha na venda da passagem...')
 
 
 def listar_passageiros_voo():
     listar_voos()
     codigo = input('Digite o código do voo: ')
+
     if codigo not in voos:
         print('Voo inválido.')
+        return
+
+    if not voos_passageiros[codigo]:
+        print('Não há passageiros nesse voo.')
         return
 
     print('-'*40)
@@ -167,8 +172,9 @@ def cancelar_passagem():
         voos_passageiros[escolha].remove(cpf)
         voos[escolha][4] += 1
         print('Passagem cancelada com sucesso.')
-    else:
-        print('Informações inválidas.')
+        return
+
+    print('Informações inválidas.')
 
 
 def voo_menor_escala():
